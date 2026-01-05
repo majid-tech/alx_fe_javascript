@@ -29,13 +29,13 @@ const quotes = [
 ];
 
 // Display a random quote
-function displayQuote() {
+function ShowRandomQuote() {
   if (quotes.length === 0) return;
 
   const randomIndex = Math.floor(Math.random() * quotes.length);
   const { text } = quotes[randomIndex];
 
-  quoteDisplay.textContent = text;
+  quoteDisplay.innerHTML = text;
 }
 
 // Add a new quote
@@ -54,5 +54,5 @@ function addQuote() {
   newQuoteCategory.value = '';
 }
 
-newQuoteBtn.addEventListener('click', displayQuote);
+newQuoteBtn.addEventListener('click', ShowRandomQuote);
 addQuoteBtn.addEventListener('click', addQuote);
