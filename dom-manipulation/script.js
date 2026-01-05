@@ -208,12 +208,14 @@ async function syncQuotes() {
       populateCategories();
       filterQuotes();
 
-      alert("Quotes updated from server. Conflicts resolved.");
+      // ✅ REQUIRED notification text
+      alert("Quotes synced with server!");
     }
   } catch (error) {
     console.error("Sync failed:", error);
   }
 }
+
 
 
 /* =========================
