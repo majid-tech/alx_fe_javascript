@@ -116,6 +116,10 @@ function filterQuotes() {
    ADD QUOTE
 ========================= */
 function addQuote() {
+    quotes.push(newQuote);
+localStorage.setItem("quotes", JSON.stringify(quotes));
+postQuoteToServer(newQuote);
+
   const text = newQuoteText.value.trim();
   const category = newQuoteCategory.value.trim();
 
@@ -170,8 +174,8 @@ function importFromJsonFile(event) {
 /* =========================
    SERVER SYNC (SIMULATION)
 ========================= */
-async function fetchServerQuotes() {
-  const response = await fetch(SERVER_URL);
+async function fetchQuotesFromServer() {
+  const response = await fetch("https://jsonplaceholder.typicode.com/posts");
   const data = await response.json();
 
   return data.slice(0, 5).map(item => ({
@@ -180,32 +184,37 @@ async function fetchServerQuotes() {
   }));
 }
 
+
 async function postQuoteToServer(quote) {
-  await fetch(SERVER_URL, {
+  await fetch("https://jsonplaceholder.typicode.com/posts", {
     method: "POST",
     body: JSON.stringify(quote),
-    headers: { "Content-Type": "application/json" }
+    headers: {
+      "Content-Type": "application/json"
+    }
   });
 }
 
-async function syncWithServer() {
+
+async function syncQuotes() {
   try {
-    const serverQuotes = await fetchServerQuotes();
+    const serverQuotes = await fetchQuotesFromServer();
     const localQuotes = JSON.parse(localStorage.getItem("quotes")) || [];
 
     if (JSON.stringify(serverQuotes) !== JSON.stringify(localQuotes)) {
       quotes = serverQuotes;
-      saveQuotes();
+      localStorage.setItem("quotes", JSON.stringify(quotes));
 
       populateCategories();
       filterQuotes();
 
-      notifyUser("Quotes synced from server. Conflicts resolved.");
+      alert("Quotes updated from server. Conflicts resolved.");
     }
   } catch (error) {
-    console.error("Server sync failed:", error);
+    console.error("Sync failed:", error);
   }
 }
+
 
 /* =========================
    EVENT LISTENERS
@@ -221,4 +230,6 @@ importFileInput.addEventListener("change", importFromJsonFile);
 ========================= */
 populateCategories();
 filterQuotes();
-setInterval(syncWithServer, SYNC_INTERVAL);
+setInterval(syncQuotes, 15000);
+document.getElementById("manualSync").addEventListener("click", syncQuotes);
+
